@@ -15,19 +15,25 @@ def on_close(ws, close_status_code, close_msg):
 
 def on_message(ws, message):
     global closes
-    print("-- received message --")
+    print("- received message -")
     json_message = json.loads(message)
-    pprint.pprint(json_message)
+    # pprint.pprint(json_message)
 
     candle = json_message['k']
+    symbol = json_message['s']
+    time = json_message['E']
 
     is_candle_closed = candle['x']
     close = candle['c']
 
+    print(f"# {symbol} {time} {is_candle_closed} ${float(close)}")
+
     if is_candle_closed:
-        print(f"close at: {close}")
+        print("-" * 20)
+        print(f"$ CLOSE at: ${float(close)}")
         closes.append(float(close))
         print(f"closes: {closes}")
+        print("-" * 20)
 
 def on_error(ws, error):
     print(error)
