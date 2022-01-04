@@ -14,6 +14,8 @@ TRADE_QUANTITY = 0.001
 
 closes = []
 in_position = False
+position = 0
+buy_closes = []
 
 # instantiate binance client
 client = Client(config.API_KEY, config.API_SECRET, tld='us')
@@ -70,7 +72,7 @@ def on_close(ws, close_status_code, close_msg):
 #   run on every message received from the websocket
 def on_message(ws, message):
     # global vars
-    global closes, in_position
+    global closes, in_position, position, buy_closes
     print("- received message -")
     # parse message to json
     json_message = json.loads(message)
@@ -115,10 +117,13 @@ def on_message(ws, message):
                     print(f"rsi: {last_rsi} > {RSI_OVERBOUGHT}")
                     print("--- overbought ---")
                     print("--- SELL ! ---")
-                    # @TODO: add binance logic to sell
-                    # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
-                    # if order_succeeded:
-                    #     in_position = False
+                    # if the current close is greater than the close of the last buy, sell
+                    # if close > buy_closes[-1]:
+                        # order_succeeded = order(SIDE_SELL, TRADE_QUANTITY, TRADE_SYMBOL)
+                        # update position if order was successful
+                        # if order_succeeded:
+                            # in_position = False
+                            # position -= TRADE_QUANTITY
 
                 else:
                     print(f"rsi: {last_rsi} > {RSI_OVERBOUGHT}")
@@ -135,10 +140,11 @@ def on_message(ws, message):
                     print(f"rsi: {last_rsi} > {RSI_OVERSOLD}")
                     print("--- oversold ---")
                     print("--- BUY ! ---")
-                    # @TODO: add binance logic to buy
                     # order_succeeded = order(SIDE_BUY, TRADE_QUANTITY, TRADE_SYMBOL)
                     # if order_succeeded:
-                    #     in_position = True
+                        # in_position = True
+                        # position += TRADE_QUANTITY
+                        # buy_closes.append(close)
         print("-" * 20)
 
 # @FUNCTION:
